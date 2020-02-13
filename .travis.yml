@@ -21,8 +21,7 @@ before_script:
 - sudo chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 
 
-#script:
-#  - echo "this is a unit test for kube version $KUBE_VERSION"
+script: skip
 
 #deploy:
 #  - provider: script
