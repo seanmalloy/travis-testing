@@ -52,7 +52,7 @@ jobs:
 stages:
   - test
   - name: deploy
-    if: branch = master
+    if: type IN (push) AND branch = master
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
