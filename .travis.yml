@@ -24,19 +24,31 @@ before_script:
 script:
   - echo "this is a unit test for kube version $KUBE_VERSION"
 
+#deploy:
+#  - provider: script
+#    skip_cleanup: true
+#    script: echo "master branch release kube version $KUBE_VERSION"
+#    on:
+#      repo: seanmalloy/travis-testing
+#      branch: master
+#  - provider: script
+#    skip_cleanup: true
+#    script: echo "tag release kube version $KUBE_VERSION"
+#    on:
+#      repo: seanmalloy/travis-testing
+#      tags: true
+
+jobs:
+  include:
+    - stage: deploy
+      env:
+        - OPERATOR_SDK_VERSION=v0.8.1 KUBE_VERSION=v1.14.2 MINIKUBE_VERSION=v1.6.2 SHFMT_VERSION=v3.0.1
+      script: echo "master branch release kube version $KUBE_VERSION"
+
+stages:
+  - test
+  - name: deploy
+    if: type IN (push) AND branch = master
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: echo "master branch release kube version $KUBE_VERSION"
-    on:
-      repo: seanmalloy/travis-testing
-      branch: master
-  - provider: script
-    skip_cleanup: true
-    script: echo "tag release kube version $KUBE_VERSION"
-    on:
-      repo: seanmalloy/travis-testing
-      tags: true
