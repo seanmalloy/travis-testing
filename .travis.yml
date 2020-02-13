@@ -1,0 +1,42 @@
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+$/
+sudo: required
+language: go
+go:
+- "1.12.x"
+env:
+  global:
+  - GO111MODULE=on
+  matrix:
+  - OPERATOR_SDK_VERSION=v0.8.1 KUBE_VERSION=v1.14.2 MINIKUBE_VERSION=v1.6.2 SHFMT_VERSION=v3.0.1
+  - OPERATOR_SDK_VERSION=v0.8.1 KUBE_VERSION=v1.13.2 MINIKUBE_VERSION=v1.6.2 SHFMT_VERSION=v3.0.1
+
+before_install:
+  - GO111MODULE=off go get -u golang.org/x/lint/golint
+
+before_script:
+- curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl
+- sudo chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+
+script:
+  - echo "this is a unit test for kube version $KUBE_VERSION"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: echo "master branch release kube version $KUBE_VERSION"
+    on:
+      repo: seanmalloy/travis-testing
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    script: echo "tag release kube version $KUBE_VERSION"
+    on:
+      repo: seanmalloy/travis-testing
+      tags: true
